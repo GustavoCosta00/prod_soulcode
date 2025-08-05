@@ -3,13 +3,15 @@ import firebase from '../firebase/app.js'
 import { getFirestore } from "firebase-admin/firestore"
 import { getStorage } from "firebase-admin/storage";
 import { findAll } from "../services/produtosService.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 const produtosRouter = express.Router();
 const storage = getStorage(firebase)
 const db = getFirestore(firebase);
 
 
+
 // PUXA TODOS OS PRODUTOS
-produtosRouter.get("/produtos", async (req, res) => {
+produtosRouter.get("/produtos", authMiddleware, async (req, res) => {
     try {
         const produtos = await findAll()
         res.status(200).json(produtos);
@@ -20,7 +22,7 @@ produtosRouter.get("/produtos", async (req, res) => {
 
 
 // PUXA DADOS APARTIR DE UM ID
-produtosRouter.get("/produtos/:id", async (req, res) => {
+produtosRouter.get("/produtos/:id", authMiddleware, async (req, res) => {
     try{
         const id = req.params.id
         const doc = await db.collection('produtos').doc(id).get()
@@ -38,7 +40,7 @@ produtosRouter.get("/produtos/:id", async (req, res) => {
 
 
 // INSERE OS DADOS DENTRO DE UMA LISTA
-produtosRouter.post("/produtos", async (req, res) => {
+produtosRouter.post("/produtos", authMiddleware, async (req, res) => {
     try {
         
         const produto = req.body;
@@ -54,7 +56,7 @@ produtosRouter.post("/produtos", async (req, res) => {
     }
 });
 
-produtosRouter.put("/produtos/:id", async (req,res) => {
+produtosRouter.put("/produtos/:id", authMiddleware, async (req,res) => {
     try {
         
         const id = req.params.id
@@ -74,7 +76,7 @@ produtosRouter.put("/produtos/:id", async (req,res) => {
 
 })
 
-produtosRouter.delete('/produtos/:id', async (req,res) => {
+produtosRouter.delete('/produtos/:id', authMiddleware, async (req,res) => {
     try {
         const id = req.params.id
         const docRef = db.collection("produtos").doc(id)
